@@ -24,4 +24,10 @@ public class APIExceptionHandler {
         });
         return dto;
     }
+
+    @ResponseStatus(code= HttpStatus.UNPROCESSABLE_ENTITY)
+    @ExceptionHandler({JaExistePropostaComODocumentoException.class})
+    public ObjetoErroDTO handleImagemPertenceAOutroUsuário(JaExistePropostaComODocumentoException exception) {
+        return exception.getObjetoErroDTO();
+    }
 }

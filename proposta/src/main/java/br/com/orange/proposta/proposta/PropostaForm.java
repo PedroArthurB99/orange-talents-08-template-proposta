@@ -1,6 +1,7 @@
 package br.com.orange.proposta.proposta;
 
 import br.com.orange.proposta.validation.DocumentoValido;
+import br.com.orange.proposta.validation.UmaPropostaPorDocumento;
 
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
@@ -10,6 +11,7 @@ public class PropostaForm {
     @NotBlank
     @Size(min = 11, max = 14)
     @DocumentoValido
+    @UmaPropostaPorDocumento
     private String documento;
 
     @Email
