@@ -1,6 +1,13 @@
 package br.com.orange.proposta.proposta;
 
+import br.com.orange.proposta.apisexternas.solicitacao.APIExternaSolicitacao;
+import br.com.orange.proposta.apisexternas.solicitacao.DadosSolicitante;
+import br.com.orange.proposta.apisexternas.solicitacao.ResultadoSolicitacao;
+import br.com.orange.proposta.apisexternas.solicitacao.ResultadoSolicitacaoEnum;
 import br.com.orange.proposta.validation.DocumentoValido;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.FeignException;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -33,6 +40,8 @@ public class Proposta {
 
     @NotNull @Positive
     private BigDecimal salario;
+
+    private StatusPropostaEnum status;
 
     @Deprecated
     public Proposta() {}
@@ -68,5 +77,33 @@ public class Proposta {
 
     public BigDecimal getSalario() {
         return salario;
+    }
+
+    public void analisarProposta(APIExternaSolicitacao apiExternaSolicitacao) throws JsonProcessingException {
+        DadosSolicitante dadosSolicitante = new DadosSolicitante(this.getDocumento(), this.getNome(), String.valueOf(this.getId()));
+        ResultadoSolicitacao solicitacao;
+        try {
+            solicitacao = apiExternaSolicitacao.solicitar(dadosSolicitante);
+        }
+        catch (FeignException feignException) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            solicitacao = objectMapper.readValue(feignException.contentUTF8(), ResultadoSolicitacao.class);
+        }
+        this.status = solicitacao.getResultadoSolicitacao() == ResultadoSolicitacaoEnum.COM_RESTRICAO ? StatusPropostaEnum.NAO_ELEGIVEL
+                : StatusPropostaEnum.ELEGIVEL;
+        System.out.println(this);
+    }
+
+    @Override
+    public String toString() {
+        return "Proposta{" +
+                "id=" + id +
+                ", documento='" + documento + '\'' +
+                ", email='" + email + '\'' +
+                ", nome='" + nome + '\'' +
+                ", endereco='" + endereco + '\'' +
+                ", salario=" + salario +
+                ", status=" + status +
+                '}';
     }
 }
