@@ -4,15 +4,13 @@ import br.com.orange.proposta.apisexternas.solicitacao.APIExternaSolicitacao;
 import br.com.orange.proposta.apisexternas.solicitacao.DadosSolicitante;
 import br.com.orange.proposta.apisexternas.solicitacao.ResultadoSolicitacao;
 import br.com.orange.proposta.apisexternas.solicitacao.ResultadoSolicitacaoEnum;
+import br.com.orange.proposta.cartao.Cartao;
 import br.com.orange.proposta.validation.DocumentoValido;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
 
@@ -42,6 +40,9 @@ public class Proposta {
     private BigDecimal salario;
 
     private StatusPropostaEnum status;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private Cartao cartao;
 
     @Deprecated
     public Proposta() {}
@@ -92,6 +93,10 @@ public class Proposta {
         this.status = solicitacao.getResultadoSolicitacao() == ResultadoSolicitacaoEnum.COM_RESTRICAO ? StatusPropostaEnum.NAO_ELEGIVEL
                 : StatusPropostaEnum.ELEGIVEL;
         System.out.println(this);
+    }
+
+    public void adicionarCartao(Cartao cartao) {
+        this.cartao = cartao;
     }
 
     @Override
