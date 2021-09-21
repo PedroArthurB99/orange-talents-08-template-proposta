@@ -25,4 +25,13 @@ public class ObjetoErroDTO {
     public LocalDateTime getInstanteDoErro() {
         return instanteDoErro;
     }
+
+    @Override
+    public String toString() {
+        return "ObjetoErroDTO{" +
+                "campo='" + campo + '\'' +
+                ", erro='" + erro + '\'' +
+                ", instanteDoErro=" + instanteDoErro +
+                '}';
+    }
 }

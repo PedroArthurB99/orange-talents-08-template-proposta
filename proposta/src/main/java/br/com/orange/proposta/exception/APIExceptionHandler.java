@@ -30,4 +30,10 @@ public class APIExceptionHandler {
     public ObjetoErroDTO handleImagemPertenceAOutroUsuário(JaExistePropostaComODocumentoException exception) {
         return exception.getObjetoErroDTO();
     }
+
+    @ResponseStatus(code= HttpStatus.BAD_REQUEST)
+    @ExceptionHandler({RegraNegocioException.class})
+    public ObjetoErroDTO handleErroRegraNegocio(RegraNegocioException exception) {
+        return exception.getObjetoErroDTO();
+    }
 }

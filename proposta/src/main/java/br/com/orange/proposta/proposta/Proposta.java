@@ -80,6 +80,10 @@ public class Proposta {
         return salario;
     }
 
+    public Cartao getCartao() {
+        return cartao;
+    }
+
     public void analisarProposta(APIExternaSolicitacao apiExternaSolicitacao) throws JsonProcessingException {
         DadosSolicitante dadosSolicitante = new DadosSolicitante(this.getDocumento(), this.getNome(), String.valueOf(this.getId()));
         ResultadoSolicitacao solicitacao;
