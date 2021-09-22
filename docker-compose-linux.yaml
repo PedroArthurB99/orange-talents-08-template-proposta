@@ -1,6 +1,35 @@
 version: '3'
 services:
 
+  bd:
+    image: mysql:latest
+    ports: 
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ajudazupper
+      MYSQL_DATABASE: propostaDataBase
+      MYSQL_PASSWORD: ajudazupper
+    volumes:
+      - /home/pedrocarvalho/Documentos/orange-talents-08-template-proposta/proposta/volumeDB:/var/lib/mysql
+    restart: on-failure
+
+  proposta:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    image: proposta
+    ports:
+      - "8080:8081"
+    environment:
+      URLBANCO: jdbc:mysql://bd:3306/propostaDataBase
+      URL_API_ANALISE_FINANCEIRA: http://analise:9999/api/solicitacao
+      URL_API_CARTOES: http://contas:8888/api/cartoes
+    restart: on-failure
+    depends_on:
+      - bd
+      - contas
+      - analise
+
   zookeeper:
     image: "confluentinc/cp-zookeeper:5.2.1"
     environment:

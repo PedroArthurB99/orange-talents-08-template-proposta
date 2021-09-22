@@ -31,7 +31,7 @@ public class APIExceptionHandler {
         return exception.getObjetoErroDTO();
     }
 
-    @ResponseStatus(code= HttpStatus.BAD_REQUEST)
+    @ResponseStatus(code= HttpStatus.NOT_FOUND)
     @ExceptionHandler({RegraNegocioException.class})
     public ObjetoErroDTO handleErroRegraNegocio(RegraNegocioException exception) {
         return exception.getObjetoErroDTO();
