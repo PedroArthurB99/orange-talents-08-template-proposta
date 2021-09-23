@@ -1,6 +1,7 @@
 package br.com.orange.proposta.proposta;
 
 import br.com.orange.proposta.cartao.CartaoDTO;
+import br.com.orange.proposta.util.Ofuscador;
 
 import java.math.BigDecimal;
 import java.util.Objects;
@@ -17,10 +18,10 @@ public class PropostaDTO {
 
     public PropostaDTO(Proposta proposta) {
         this.id = proposta.getId();
-        this.documento = proposta.getDocumento();
-        this.email = proposta.getEmail();
-        this.nome = proposta.getNome();
-        this.endereco = proposta.getEmail();
+        this.documento = Ofuscador.ofuscarString(proposta.getDocumento());
+        this.email = Ofuscador.ofuscarString(proposta.getEmail());
+        this.nome = Ofuscador.ofuscarString(proposta.getNome());
+        this.endereco = Ofuscador.ofuscarString(proposta.getEndereco());
         this.salario = proposta.getSalario();
         if (Objects.nonNull(proposta.getCartao())) {
             this.cartao = new CartaoDTO(proposta.getCartao());

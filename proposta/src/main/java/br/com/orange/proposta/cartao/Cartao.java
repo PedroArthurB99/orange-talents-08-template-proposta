@@ -1,6 +1,9 @@
 package br.com.orange.proposta.cartao;
 
 import br.com.orange.proposta.biometria.Biometria;
+import br.com.orange.proposta.bloqueio.Bloqueio;
+import br.com.orange.proposta.exception.ObjetoErroDTO;
+import br.com.orange.proposta.exception.RegraNegocioException;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -26,6 +29,12 @@ public class Cartao {
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<Biometria> biometrias;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Bloqueio> bloqueios;
+
+    @Enumerated(EnumType.STRING)
+    private StatusBloqueioEnum status = StatusBloqueioEnum.LIBERADO;
 
     @Deprecated
     public Cartao() {}
@@ -61,7 +70,23 @@ public class Cartao {
         return biometrias;
     }
 
+    public List<Bloqueio> getBloqueios() {
+        return bloqueios;
+    }
+
+    public StatusBloqueioEnum getStatus() {
+        return status;
+    }
+
     public void addBiometria(Biometria biometria) {
         this.biometrias.add(biometria);
+    }
+
+    public void addBloqueio(Bloqueio bloqueio) {
+        if (this.status.equals(StatusBloqueioEnum.BLOQUEADO)) {
+            throw new RegraNegocioException(new ObjetoErroDTO("bloqueio", "O cartão já está bloqueado"));
+        }
+        this.getBloqueios().add(bloqueio);
+        this.status = StatusBloqueioEnum.BLOQUEADO;
     }
 }

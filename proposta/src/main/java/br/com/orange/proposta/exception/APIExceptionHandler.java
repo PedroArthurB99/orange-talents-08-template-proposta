@@ -31,9 +31,15 @@ public class APIExceptionHandler {
         return exception.getObjetoErroDTO();
     }
 
-    @ResponseStatus(code= HttpStatus.NOT_FOUND)
+    @ResponseStatus(code= HttpStatus.UNPROCESSABLE_ENTITY)
     @ExceptionHandler({RegraNegocioException.class})
     public ObjetoErroDTO handleErroRegraNegocio(RegraNegocioException exception) {
+        return exception.getObjetoErroDTO();
+    }
+
+    @ResponseStatus(code= HttpStatus.NOT_FOUND)
+    @ExceptionHandler({EntidadeNaoEncontrada.class})
+    public ObjetoErroDTO handleEntidadeNaoEncontrada(EntidadeNaoEncontrada exception) {
         return exception.getObjetoErroDTO();
     }
 }
