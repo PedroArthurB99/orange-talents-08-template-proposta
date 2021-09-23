@@ -3,6 +3,7 @@ package br.com.orange.proposta.proposta;
 import br.com.orange.proposta.cartao.CartaoDTO;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 public class PropostaDTO {
 
@@ -21,7 +22,9 @@ public class PropostaDTO {
         this.nome = proposta.getNome();
         this.endereco = proposta.getEmail();
         this.salario = proposta.getSalario();
-        this.cartao = new CartaoDTO(proposta.getCartao());
+        if (Objects.nonNull(proposta.getCartao())) {
+            this.cartao = new CartaoDTO(proposta.getCartao());
+        }
     }
 
     public Long getId() {
@@ -46,5 +49,9 @@ public class PropostaDTO {
 
     public BigDecimal getSalario() {
         return salario;
+    }
+
+    public CartaoDTO getCartao() {
+        return cartao;
     }
 }
