@@ -1,12 +1,12 @@
 package br.com.orange.proposta.cartao;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import br.com.orange.proposta.biometria.Biometria;
+
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 public class Cartao {
@@ -23,6 +23,9 @@ public class Cartao {
     private String titular;
 
     private BigDecimal limite;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Biometria> biometrias;
 
     @Deprecated
     public Cartao() {}
@@ -52,5 +55,13 @@ public class Cartao {
 
     public BigDecimal getLimite() {
         return limite;
+    }
+
+    public List<Biometria> getBiometrias() {
+        return biometrias;
+    }
+
+    public void addBiometria(Biometria biometria) {
+        this.biometrias.add(biometria);
     }
 }
