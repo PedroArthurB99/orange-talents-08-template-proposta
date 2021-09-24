@@ -1,9 +1,17 @@
 package br.com.orange.proposta.cartao;
 
+import br.com.orange.proposta.apisexternas.cartoes.APIExternaCartoes;
+import br.com.orange.proposta.apisexternas.cartoes.DadosParaBloqueio;
+import br.com.orange.proposta.apisexternas.cartoes.ResultadoBloqueio;
+import br.com.orange.proposta.apisexternas.solicitacao.APIExternaSolicitacao;
+import br.com.orange.proposta.apisexternas.solicitacao.ResultadoSolicitacao;
 import br.com.orange.proposta.biometria.Biometria;
 import br.com.orange.proposta.bloqueio.Bloqueio;
 import br.com.orange.proposta.exception.ObjetoErroDTO;
 import br.com.orange.proposta.exception.RegraNegocioException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.FeignException;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -34,7 +42,7 @@ public class Cartao {
     private List<Bloqueio> bloqueios;
 
     @Enumerated(EnumType.STRING)
-    private StatusBloqueioEnum status = StatusBloqueioEnum.LIBERADO;
+    private StatusBloqueioEnum status;
 
     @Deprecated
     public Cartao() {}
@@ -44,6 +52,7 @@ public class Cartao {
         this.emitidoEm = emitidoEm;
         this.titular = titular;
         this.limite = limite;
+        this.status = StatusBloqueioEnum.LIBERADO;
     }
 
     public Long getId() {
@@ -82,11 +91,25 @@ public class Cartao {
         this.biometrias.add(biometria);
     }
 
-    public void addBloqueio(Bloqueio bloqueio) {
+    public void addBloqueio(Bloqueio bloqueio, APIExternaCartoes apiExternaCartoes) throws JsonProcessingException {
         if (this.status.equals(StatusBloqueioEnum.BLOQUEADO)) {
             throw new RegraNegocioException(new ObjetoErroDTO("bloqueio", "O cartão já está bloqueado"));
         }
         this.getBloqueios().add(bloqueio);
-        this.status = StatusBloqueioEnum.BLOQUEADO;
+        ResultadoBloqueio resultadoBloqueio;
+        try {
+            resultadoBloqueio = apiExternaCartoes.bloquear(
+                    this.numeroCartao, new DadosParaBloqueio("Sistema de propostas"));
+            if (StatusBloqueioEnum.valueOf(resultadoBloqueio.getResultado()) == StatusBloqueioEnum.BLOQUEADO) {
+                this.status = StatusBloqueioEnum.BLOQUEADO;
+                System.out.println("mudou status");
+            }
+        }
+        catch (FeignException feignException) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            resultadoBloqueio = objectMapper.readValue(feignException.contentUTF8(), ResultadoBloqueio.class);
+            System.out.println("tratou exceção");
+        }
+
     }
 }

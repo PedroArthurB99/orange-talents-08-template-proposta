@@ -1,11 +1,14 @@
 package br.com.orange.proposta.cartao;
 
+import br.com.orange.proposta.apisexternas.cartoes.APIExternaCartoes;
+import br.com.orange.proposta.apisexternas.solicitacao.APIExternaSolicitacao;
 import br.com.orange.proposta.biometria.Biometria;
 import br.com.orange.proposta.biometria.BiometriaForm;
 import br.com.orange.proposta.bloqueio.Bloqueio;
 import br.com.orange.proposta.exception.EntidadeNaoEncontrada;
 import br.com.orange.proposta.exception.ObjetoErroDTO;
 import br.com.orange.proposta.exception.RegraNegocioException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -23,6 +26,9 @@ public class CartaoController {
     @Autowired
     private CartaoRepository repository;
 
+    @Autowired
+    private APIExternaCartoes apiExternaCartoes;
+
     @RequestMapping("/{id}/biometria")
     public ResponseEntity<CartaoDTO> adicionarBiometria(@PathVariable("id") Long id, @RequestBody BiometriaForm form,
                                                         UriComponentsBuilder uriComponentsBuilder) {
@@ -37,11 +43,11 @@ public class CartaoController {
 
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping("/{id}/bloqueio")
-    public void bloquearCartao(@PathVariable("id") Long id, HttpServletRequest request) {
+    public void bloquearCartao(@PathVariable("id") Long id, HttpServletRequest request) throws JsonProcessingException {
         Bloqueio bloqueio = new Bloqueio(request.getRemoteAddr(), request.getHeader(HttpHeaders.USER_AGENT));
         Cartao cartao = this.repository.findById(id).orElseThrow(() -> new EntidadeNaoEncontrada(
                 new ObjetoErroDTO("id Cartão", "Não existe um cartão com esse id")));
-        cartao.addBloqueio(bloqueio);
+        cartao.addBloqueio(bloqueio, apiExternaCartoes);
         this.repository.save(cartao);
     }
 
