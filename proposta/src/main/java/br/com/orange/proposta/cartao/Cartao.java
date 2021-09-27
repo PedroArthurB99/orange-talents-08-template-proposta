@@ -1,8 +1,6 @@
 package br.com.orange.proposta.cartao;
 
-import br.com.orange.proposta.apisexternas.cartoes.APIExternaCartoes;
-import br.com.orange.proposta.apisexternas.cartoes.DadosParaBloqueio;
-import br.com.orange.proposta.apisexternas.cartoes.ResultadoBloqueio;
+import br.com.orange.proposta.apisexternas.cartoes.*;
 import br.com.orange.proposta.apisexternas.solicitacao.APIExternaSolicitacao;
 import br.com.orange.proposta.apisexternas.solicitacao.ResultadoSolicitacao;
 import br.com.orange.proposta.avisoviagem.AvisoViagem;
@@ -11,6 +9,7 @@ import br.com.orange.proposta.bloqueio.Bloqueio;
 import br.com.orange.proposta.exception.ObjetoErroDTO;
 import br.com.orange.proposta.exception.RegraNegocioException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 
@@ -111,13 +110,27 @@ public class Cartao {
         }
         catch (FeignException feignException) {
             ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             resultadoBloqueio = objectMapper.readValue(feignException.contentUTF8(), ResultadoBloqueio.class);
             System.out.println("tratou exceção");
         }
 
     }
 
-    public void addAvisoViagem(AvisoViagem viagem) {
-        this.avisosViagem.add(viagem);
+    public void addAvisoViagem(AvisoViagem viagem, APIExternaCartoes apiExternaCartoes) throws JsonProcessingException {
+        ResultadoAviso resultadoAviso;
+        try {
+            resultadoAviso = apiExternaCartoes.avisoViagem(
+                    this.numeroCartao, new DadosParaAviso(viagem.getDestinoViagem(), viagem.getDataTermino()));
+            if (resultadoAviso.getResultado().equals("CRIADO")) {
+                this.avisosViagem.add(viagem);
+                System.out.println("deu bom");
+            }
+        }
+        catch (FeignException feignException) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            resultadoAviso = objectMapper.readValue(feignException.contentUTF8(), ResultadoAviso.class);
+        }
     }
 }

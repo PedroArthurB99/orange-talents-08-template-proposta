@@ -14,4 +14,7 @@ public interface APIExternaCartoes {
 
     @PostMapping("/{id}/bloqueios")
     public ResultadoBloqueio bloquear(@PathVariable("id") String id, DadosParaBloqueio dadosParaBloqueio);
+
+    @PostMapping("/{id}/avisos")
+    public ResultadoAviso avisoViagem(@PathVariable("id") String id, DadosParaAviso dadosParaAviso);
 }

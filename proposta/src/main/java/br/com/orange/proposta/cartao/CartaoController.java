@@ -60,7 +60,7 @@ public class CartaoController {
         AvisoViagem viagem = form.toModel(request);
         Cartao cartao = this.repository.findById(id).orElseThrow(() -> new EntidadeNaoEncontrada(
                 new ObjetoErroDTO("id Cartão", "Não existe um cartão com esse id")));
-        cartao.addAvisoViagem(viagem);
+        cartao.addAvisoViagem(viagem, apiExternaCartoes);
         this.repository.save(cartao);
     }
 
