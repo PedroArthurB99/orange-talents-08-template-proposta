@@ -5,6 +5,7 @@ import br.com.orange.proposta.apisexternas.cartoes.DadosParaBloqueio;
 import br.com.orange.proposta.apisexternas.cartoes.ResultadoBloqueio;
 import br.com.orange.proposta.apisexternas.solicitacao.APIExternaSolicitacao;
 import br.com.orange.proposta.apisexternas.solicitacao.ResultadoSolicitacao;
+import br.com.orange.proposta.avisoviagem.AvisoViagem;
 import br.com.orange.proposta.biometria.Biometria;
 import br.com.orange.proposta.bloqueio.Bloqueio;
 import br.com.orange.proposta.exception.ObjetoErroDTO;
@@ -40,6 +41,9 @@ public class Cartao {
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<Bloqueio> bloqueios;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<AvisoViagem> avisosViagem;
 
     @Enumerated(EnumType.STRING)
     private StatusBloqueioEnum status;
@@ -111,5 +115,9 @@ public class Cartao {
             System.out.println("tratou exceção");
         }
 
+    }
+
+    public void addAvisoViagem(AvisoViagem viagem) {
+        this.avisosViagem.add(viagem);
     }
 }
