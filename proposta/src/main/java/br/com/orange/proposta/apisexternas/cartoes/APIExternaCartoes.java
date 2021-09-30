@@ -17,4 +17,7 @@ public interface APIExternaCartoes {
 
     @PostMapping("/{id}/avisos")
     public ResultadoAviso avisoViagem(@PathVariable("id") String id, DadosParaAviso dadosParaAviso);
+
+    @PostMapping("/{id}/carteiras")
+    public ResultadoCarteiras adicionarCarteira(@PathVariable("id") String id, DadosParaCarteira dadosParaCarteira);
 }

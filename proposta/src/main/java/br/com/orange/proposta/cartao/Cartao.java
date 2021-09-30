@@ -6,6 +6,7 @@ import br.com.orange.proposta.apisexternas.solicitacao.ResultadoSolicitacao;
 import br.com.orange.proposta.avisoviagem.AvisoViagem;
 import br.com.orange.proposta.biometria.Biometria;
 import br.com.orange.proposta.bloqueio.Bloqueio;
+import br.com.orange.proposta.carteira.Carteira;
 import br.com.orange.proposta.exception.ObjetoErroDTO;
 import br.com.orange.proposta.exception.RegraNegocioException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -43,6 +44,9 @@ public class Cartao {
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<AvisoViagem> avisosViagem;
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    private List<Carteira> carteiras;
 
     @Enumerated(EnumType.STRING)
     private StatusBloqueioEnum status;
@@ -90,6 +94,14 @@ public class Cartao {
         return status;
     }
 
+    public List<AvisoViagem> getAvisosViagem() {
+        return avisosViagem;
+    }
+
+    public List<Carteira> getCarteiras() {
+        return carteiras;
+    }
+
     public void addBiometria(Biometria biometria) {
         this.biometrias.add(biometria);
     }
@@ -133,4 +145,27 @@ public class Cartao {
             resultadoAviso = objectMapper.readValue(feignException.contentUTF8(), ResultadoAviso.class);
         }
     }
+
+    public void adicionarCarteira(Carteira carteira, APIExternaCartoes apiExternaCartoes) throws JsonProcessingException {
+        if (this.carteiras.contains(carteira)) {
+            throw new RegraNegocioException(new ObjetoErroDTO("carteiraId",
+                    "Você já adicionou este cartão à esta carteira"));
+        }
+
+        ResultadoCarteiras resultadoCarteiras;
+        try {
+            resultadoCarteiras = apiExternaCartoes.adicionarCarteira(
+                    this.numeroCartao, new DadosParaCarteira(carteira.getEmail(), String.valueOf(carteira.getTipoCarteira())));
+            if (resultadoCarteiras.getResultado().equals("ASSOCIADA")) {
+                this.carteiras.add(carteira);
+                System.out.println("deu bom");
+            }
+        }
+        catch (FeignException feignException) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            resultadoCarteiras = objectMapper.readValue(feignException.contentUTF8(), ResultadoCarteiras.class);
+        }
+    }
+
 }

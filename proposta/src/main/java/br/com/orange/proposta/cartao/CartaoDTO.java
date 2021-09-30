@@ -2,6 +2,7 @@ package br.com.orange.proposta.cartao;
 
 import br.com.orange.proposta.biometria.BiometriaDTO;
 import br.com.orange.proposta.bloqueio.BloqueioDTO;
+import br.com.orange.proposta.carteira.CarteiraDTO;
 import br.com.orange.proposta.util.Ofuscador;
 
 import java.math.BigDecimal;
@@ -19,6 +20,7 @@ public class CartaoDTO {
     private List<BiometriaDTO> biometrias = new ArrayList<>();
     private List<BloqueioDTO> bloqueios = new ArrayList<>();
     private StatusBloqueioEnum status;
+    private List<CarteiraDTO> carteiras = new ArrayList<>();
 
     public CartaoDTO(Cartao cartao) {
         this.id = cartao.getId();
@@ -29,6 +31,15 @@ public class CartaoDTO {
         this.status = cartao.getStatus();
         preencherBiometrias(cartao);
         preencherBloqueios(cartao);
+        preencherCarteiras(cartao);
+    }
+
+    private void preencherCarteiras(Cartao cartao) {
+        if ((cartao.getCarteiras() != null) && (cartao.getCarteiras().size() > 0)) {
+            cartao.getCarteiras().forEach(carteira -> {
+                this.carteiras.add(new CarteiraDTO(carteira));
+            });
+        }
     }
 
     private void preencherBiometrias(Cartao cartao) {
@@ -67,5 +78,17 @@ public class CartaoDTO {
 
     public List<BiometriaDTO> getBiometrias() {
         return biometrias;
+    }
+
+    public List<BloqueioDTO> getBloqueios() {
+        return bloqueios;
+    }
+
+    public StatusBloqueioEnum getStatus() {
+        return status;
+    }
+
+    public List<CarteiraDTO> getCarteiras() {
+        return carteiras;
     }
 }
