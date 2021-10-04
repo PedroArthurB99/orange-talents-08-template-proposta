@@ -2,7 +2,11 @@ package br.com.orange.proposta.proposta;
 
 import br.com.orange.proposta.validation.DocumentoValido;
 import br.com.orange.proposta.validation.UmaPropostaPorDocumento;
+import org.springframework.security.crypto.encrypt.Encryptors;
+import org.springframework.security.crypto.encrypt.TextEncryptor;
+import org.springframework.security.crypto.keygen.KeyGenerators;
 
+import javax.crypto.KeyGenerator;
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
 

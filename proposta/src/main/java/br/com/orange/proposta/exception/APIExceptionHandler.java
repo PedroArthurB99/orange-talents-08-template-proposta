@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @RestControllerAdvice
@@ -41,5 +42,12 @@ public class APIExceptionHandler {
     @ExceptionHandler({EntidadeNaoEncontrada.class})
     public ObjetoErroDTO handleEntidadeNaoEncontrada(EntidadeNaoEncontrada exception) {
         return exception.getObjetoErroDTO();
+    }
+
+    @ResponseStatus(code= HttpStatus.BAD_REQUEST)
+    @ExceptionHandler({Exception.class})
+    public String handleEntidadeNaoEncontrada(Exception exception) {
+        exception.printStackTrace();
+        return "Desculpe, tivemos um erro interno no nosso servidor. Por favor, tente novamente mais tarde.";
     }
 }

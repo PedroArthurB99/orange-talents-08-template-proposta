@@ -5,7 +5,7 @@ import br.com.orange.proposta.apisexternas.solicitacao.DadosSolicitante;
 import br.com.orange.proposta.apisexternas.solicitacao.ResultadoSolicitacao;
 import br.com.orange.proposta.apisexternas.solicitacao.ResultadoSolicitacaoEnum;
 import br.com.orange.proposta.cartao.Cartao;
-import br.com.orange.proposta.validation.DocumentoValido;
+import br.com.orange.proposta.util.EncryptUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
@@ -22,8 +22,6 @@ public class Proposta {
     private Long id;
 
     @NotBlank
-    @Size(min = 11, max = 14)
-    @DocumentoValido
     private String documento;
 
     @Email
@@ -49,7 +47,7 @@ public class Proposta {
 
     public Proposta(@NotBlank String documento, @NotBlank String email, @NotBlank String nome, @NotBlank String endereco,
                     @NotNull BigDecimal salario) {
-        this.documento = documento;
+        this.documento = EncryptUtil.textEncryptor.encrypt(documento);
         this.email = email;
         this.nome = nome;
         this.endereco = endereco;
@@ -61,7 +59,7 @@ public class Proposta {
     }
 
     public String getDocumento() {
-        return documento;
+        return EncryptUtil.textEncryptor.decrypt(this.documento);
     }
 
     public String getEmail() {

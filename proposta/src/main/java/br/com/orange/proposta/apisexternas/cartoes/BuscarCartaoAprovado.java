@@ -30,7 +30,6 @@ public class BuscarCartaoAprovado {
                 ResultadoCartao solicitacao = this.apiExternaCartoes.solicitar(dadosSolicitante);
                 proposta.adicionarCartao(solicitacao.toCartao());
                 propostaRepository.save(proposta);
-                System.out.println("chegou aq");
             } catch (FeignException exception) {
                 System.out.println("Deu errado, " + exception.getMessage());
             }
